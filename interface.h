@@ -4,15 +4,35 @@
 #include <vector>
 #include <string>
 
-class Cable;
+
+class Interface;
+
+class Cable
+{
+    friend Interface;
+public:
+    Cable();
+    enum Port{A, B};
+    void transmit(Port port, const std::string data);
+private:
+    Interface* m_a;
+    Interface* m_b;
+
+};
+
 
 class Interface {
-    Interface();
-    void send(std::string);
-    std::string receive();
+public:
+    Interface(const std::string& name);
+    void connect(Cable &cable, Cable::Port p);
+    void send(Cable::Port p, const std::string data);
+    void sendData(const std::string data);
+    std::string receiveData();
+
 private:
-    std::string name;
-    Cable *cable;
+    std::string m_name;
+    Cable::Port m_holdPort;
+    Cable *m_cable;
 };
 
 class IDevice {
@@ -20,17 +40,10 @@ class IDevice {
     void addInterface();
     void delInterface();
 
+    void sendData(const Interface& interface, const std::string data);
+    std::string receiveData(const Interface& interface);
+
     std::vector<Interface> m_interfaces;
-};
-
-class Cable
-{
-public:
-    Cable();
-
-    IDevice* a;
-    IDevice* b;
-
 };
 
 #endif // INTERFACE_H
